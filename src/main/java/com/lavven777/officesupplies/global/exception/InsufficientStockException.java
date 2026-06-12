@@ -1,7 +1,7 @@
 package com.lavven777.officesupplies.global.exception;
 
-public class InsufficientStockException extends RuntimeException {
+public class InsufficientStockException extends BusinessException {
     public InsufficientStockException(String itemName) {
-        super(itemName + "의 재고가 부족합니다.");
+        super(ErrorCode.INSUFFICIENT_STOCK);
     }
 }
