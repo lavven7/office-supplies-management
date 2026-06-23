@@ -104,7 +104,7 @@ public class ItemRequest extends BaseTimeEntity {
     /**
      * 요청 승인.
      * REQUESTED 상태에서만 호출 가능.
-     * Service에서 재고 차감 후 이 메서드를 호출해 상태를 변경.
+     * 승인자와 승인 시각을 기록하고 상태를 APPROVED로 변경한다.
      */
     public void approve(User approver) {
         validateStatus(REQUESTED);
