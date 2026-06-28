@@ -1,6 +1,11 @@
 package com.lavven777.officesupplies.domain.itemrequest.service;
 
+import com.lavven777.officesupplies.domain.inventory.entity.HistoryType;
+import com.lavven777.officesupplies.domain.inventory.entity.InventoryHistory;
+import com.lavven777.officesupplies.domain.inventory.repository.InventoryHistoryRepository;
+import com.lavven777.officesupplies.domain.item.entity.Item;
 import com.lavven777.officesupplies.domain.itemrequest.entity.ItemRequest;
+import com.lavven777.officesupplies.domain.itemrequest.entity.ItemRequestDetail;
 import com.lavven777.officesupplies.domain.itemrequest.repository.ItemRequestRepository;
 import com.lavven777.officesupplies.domain.user.entity.User;
 import com.lavven777.officesupplies.domain.user.repository.UserRepository;
@@ -10,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -18,12 +24,15 @@ public class ItemRequestService {
     private final UserRepository userRepository;
     private final ItemRequestRepository itemRequestRepository;
 
-    // 2단계에서 추가 예정
-    // private final InventoryHistoryRepository inventoryHistoryRepository;
+    private final InventoryHistoryRepository inventoryHistoryRepository;
 
     /**
-     * [1단계] 승인자 조회 → 요청 조회 → 상태 변경까지만 구현.
-     * 2단계에서 재고 차감 + 이력 저장을 추가할 예정.
+     * 비품 요청을 승인한다.
+     *
+     * 요청 상태를 APPROVED로 변경하고,
+     * 요청 상세 품목별로 재고를 차감한 뒤 재고 이력을 저장한다.
+     *
+     * 중간에 예외가 발생하면 @Transactional에 의해 전체 작업이 롤백된다.
      */
     @Transactional
     public void approveRequest(Long requestId, Long approverId) {
@@ -38,6 +47,7 @@ public class ItemRequestService {
         User approver = userRepository.findById(approverId)
                 .orElseThrow(UserNotFoundException::new);
 
+
         // ② ItemRequest 조회 — details + item을 fetch join으로 함께 로딩
         // 없으면 ItemRequestNotFoundException 발생.
         //
@@ -47,6 +57,7 @@ public class ItemRequestService {
         // 1단계에서는 details를 쓰지 않지만, 메서드는 그대로 유지한다.
         ItemRequest itemRequest = itemRequestRepository.findByIdWithDetails(requestId)
                 .orElseThrow(ItemRequestNotFoundException::new);
+
 
         // ③ 상태 변경
         // ItemRequest.approve() 내부에서 두 가지를 처리한다.
@@ -58,14 +69,35 @@ public class ItemRequestService {
         // Service에서 if 문으로 체크하면 같은 규칙이 여러 곳에 흩어진다.
         itemRequest.approve(approver);
 
-        // itemRequest의 변경사항(status, approver, approvalDate)은
-        // 별도 save() 없이 자동 반영된다.
-        //
+
+        // ④ 품목별 재고 차감 + 이력 저장
+        for (ItemRequestDetail detail : itemRequest.getDetails()) {
+
+            Item item = detail.getItem();
+
+            int beforeStock = item.getCurrentStock();
+
+            item.decreaseStock(detail.getQuantity());
+
+            int afterStock = item.getCurrentStock();
+
+            InventoryHistory history = InventoryHistory.builder()
+                    .item(item)
+                    .historyType(HistoryType.OUTBOUND)
+                    .quantity(detail.getQuantity())
+                    .beforeStock(beforeStock)
+                    .afterStock(afterStock)
+                    .createdBy(approver)
+                    .build();
+
+            inventoryHistoryRepository.save(history);
+        }
+
+
+        // itemRequest와 item의 변경사항은 별도 save() 없이 자동 반영된다.
         // 이유: @Transactional 범위 안에서 조회한 엔티티는 영속 상태이고,
         // 트랜잭션 커밋 시점에 JPA 변경 감지(dirty checking)가
         // 변경된 필드를 감지해 UPDATE 쿼리를 자동 실행한다.
 
-        // 2단계에서 추가 예정:
-        // for (ItemRequestDetail detail : itemRequest.getDetails()) { ... }
     }
 }
