@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>비품 목록</title>
+</head>
+<body>
+<h1>비품 목록</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>비품명</th>
+        <th>카테고리</th>
+        <th>현재 재고</th>
+        <th>최소 재고</th>
+        <th>활성 상태</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${items}">
+        <td th:text="${item.id}">1</td>
+        <td th:text="${item.name}">A4 용지</td>
+        <td th:text="${item.category}">문구</td>
+        <td th:text="${item.currentStock}">100</td>
+        <td th:text="${item.minimumStock}">10</td>
+        <td th:text="${item.active}">true</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
