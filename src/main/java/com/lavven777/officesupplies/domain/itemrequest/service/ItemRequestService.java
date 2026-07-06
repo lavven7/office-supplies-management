@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -99,5 +101,11 @@ public class ItemRequestService {
         // 트랜잭션 커밋 시점에 JPA 변경 감지(dirty checking)가
         // 변경된 필드를 감지해 UPDATE 쿼리를 자동 실행한다.
 
+
+    } // approveRequest 끝
+
+    public List<ItemRequest> findAll() {
+        return itemRequestRepository.findAll();
     }
+
 }
