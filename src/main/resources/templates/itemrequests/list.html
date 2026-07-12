@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>비품 요청 목록</title>
+</head>
+<body>
+
+<h1>비품 요청 목록</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>요청 ID</th>
+        <th>요청자</th>
+        <th>상태</th>
+        <th>요청일</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${#lists.isEmpty(requests)}">
+        <td colspan="4">요청 내역이 없습니다.</td>
+    </tr>
+    <tr th:each="request : ${requests}">
+        <td th:text="${request.id}">1</td>
+        <td th:text="${request.requester.name}">홍길동</td>
+        <td th:text="${request.status}">REQUESTED</td>
+        <td th:text="${#temporals.format(request.createdAt, 'yyyy-MM-dd')}">2026-07-06</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
