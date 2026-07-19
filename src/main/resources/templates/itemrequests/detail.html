@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>비품 요청 상세</title>
+</head>
+<body>
+
+<h1>비품 요청 상세</h1>
+
+<!-- 요청 기본 정보 -->
+<table border="1">
+    <tr>
+        <th>요청자</th>
+        <!--
+            itemRequest.requester 는 @ManyToOne LAZY 이지만
+            findByIdWithDetails() 의 fetch join으로 이미 로딩되어 있어
+            추가 쿼리 없이 접근 가능하다.
+        -->
+        <td th:text="${itemRequest.requester.name}"></td>
+    </tr>
+    <tr>
+        <th>부서</th>
+        <td th:text="${itemRequest.requester.department}"></td>
+    </tr>
+    <tr>
+        <th>요청일</th>
+        <!--
+            createdAt 은 BaseTimeEntity 에서 상속한 필드.
+            LocalDateTime 을 읽기 좋게 포맷한다.
+        -->
+        <td th:text="${#temporals.format(itemRequest.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+    </tr>
+    <tr>
+        <th>상태</th>
+        <!--
+            Enum 의 description 필드를 표시.
+            itemRequest.status 는 ItemRequestStatus Enum 이므로
+            .description 으로 한글 표시 가능.
+            Enum 에 description 필드와 getter 가 있어야 한다.
+        -->
+        <td th:text="${itemRequest.status}"></td>
+    </tr>
+    <!-- 반려된 경우에만 반려 사유 표시 -->
+    <tr th:if="${itemRequest.rejectReason != null}">
+        <th>반려 사유</th>
+        <td th:text="${itemRequest.rejectReason}"></td>
+    </tr>
+    <!-- 승인/반려된 경우에만 처리자, 처리일 표시 -->
+    <tr th:if="${itemRequest.approver != null}">
+        <th>처리자</th>
+        <td th:text="${itemRequest.approver.name}"></td>
+    </tr>
+    <tr th:if="${itemRequest.approvalDate != null}">
+        <th>처리일</th>
+        <td th:text="${#temporals.format(itemRequest.approvalDate, 'yyyy-MM-dd HH:mm')}"></td>
+    </tr>
+</table>
+
+<h2>요청 품목 목록</h2>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>비품명</th>
+        <th>요청 수량</th>
+        <th>현재 재고</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!--
+        th:each 로 details 리스트를 순회한다.
+        fetch join 으로 이미 로딩했으므로 추가 쿼리 없이 접근 가능.
+        detail.item.name, detail.item.currentStock 도 마찬가지.
+    -->
+    <tr th:each="detail : ${itemRequest.details}">
+        <td th:text="${detail.item.name}"></td>
+        <td th:text="${detail.quantity}"></td>
+        <td th:text="${detail.item.currentStock}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- 목록으로 돌아가기 -->
+<a th:href="@{/requests}">목록으로</a>
+
+</body>
+</html>

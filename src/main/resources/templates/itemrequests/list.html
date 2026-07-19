@@ -22,7 +22,11 @@
         <td colspan="4">요청 내역이 없습니다.</td>
     </tr>
     <tr th:each="request : ${requests}">
-        <td th:text="${request.id}">1</td>
+        <td>
+            <a th:href="@{/requests/{id}(id=${request.id})}"
+               th:text="${request.id}">
+            </a>
+        </td>
         <td th:text="${request.requester.name}">홍길동</td>
         <td th:text="${request.status}">REQUESTED</td>
         <td th:text="${#temporals.format(request.createdAt, 'yyyy-MM-dd')}">2026-07-06</td>

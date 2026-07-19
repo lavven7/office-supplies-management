@@ -108,4 +108,11 @@ public class ItemRequestService {
         return itemRequestRepository.findAll();
     }
 
+
+    public ItemRequest findById(Long id) {
+        return itemRequestRepository.findByIdWithDetails(id)
+                .orElseThrow(ItemRequestNotFoundException::new);
+    }
+
+
 }
