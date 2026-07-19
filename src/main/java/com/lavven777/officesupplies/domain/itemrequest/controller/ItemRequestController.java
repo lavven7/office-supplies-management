@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -30,6 +31,12 @@ public class ItemRequestController {
         ItemRequest itemRequest = itemRequestService.findById(id);
         model.addAttribute("itemRequest", itemRequest);
         return "itemrequests/detail";
+    }
+
+    @PostMapping("/{id}/approve")
+    public String approve(@PathVariable Long id){
+        itemRequestService.approveRequest(id, 1L);
+        return "redirect:/requests/" + id;
     }
 
 
