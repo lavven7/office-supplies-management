@@ -4,13 +4,13 @@ import com.lavven777.officesupplies.domain.inventory.entity.HistoryType;
 import com.lavven777.officesupplies.domain.inventory.entity.InventoryHistory;
 import com.lavven777.officesupplies.domain.inventory.repository.InventoryHistoryRepository;
 import com.lavven777.officesupplies.domain.item.entity.Item;
+import com.lavven777.officesupplies.domain.item.repository.ItemRepository;
 import com.lavven777.officesupplies.domain.itemrequest.entity.ItemRequest;
 import com.lavven777.officesupplies.domain.itemrequest.entity.ItemRequestDetail;
 import com.lavven777.officesupplies.domain.itemrequest.repository.ItemRequestRepository;
 import com.lavven777.officesupplies.domain.user.entity.User;
 import com.lavven777.officesupplies.domain.user.repository.UserRepository;
-import com.lavven777.officesupplies.global.exception.ItemRequestNotFoundException;
-import com.lavven777.officesupplies.global.exception.UserNotFoundException;
+import com.lavven777.officesupplies.global.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +25,8 @@ public class ItemRequestService {
 
     private final UserRepository userRepository;
     private final ItemRequestRepository itemRequestRepository;
-
     private final InventoryHistoryRepository inventoryHistoryRepository;
+    private final ItemRepository itemRepository;
 
     /**
      * 비품 요청을 승인한다.
@@ -149,6 +149,63 @@ public class ItemRequestService {
     public ItemRequest findById(Long id) {
         return itemRequestRepository.findByIdWithDetails(id)
                 .orElseThrow(ItemRequestNotFoundException::new);
+    }
+
+    /**
+     * 비품 요청 생성.
+     *
+     * MVP 단계: 품목 하나만 받는 단순 구조.
+     * 추후 여러 품목을 동시에 요청하는 구조로 확장 시
+     * 파라미터를 List<> 또는 DTO로 교체.
+     *
+     * cascade = ALL 덕분에 itemRequestRepository.save() 하나로
+     * ItemRequest + ItemRequestDetail 모두 INSERT된다.
+     *
+     * @param requesterId 요청자 User id (MVP: Controller에서 1L 하드코딩)
+     * @param itemId      요청할 비품 id
+     * @param quantity    요청 수량
+     */
+    @Transactional
+    public void createRequest(Long requesterId, Long itemId, Integer quantity) {
+
+        // ① 요청자 조회
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(UserNotFoundException::new);
+
+        // ② 비품 조회
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(ItemNotFoundException::new);
+
+        // 비활성화된 비품으로 요청 방지
+        // form에서 active 비품만 보여주지만 URL 직접 호출 등 우회 케이스 차단
+        if (!item.isActive()) {
+            throw new BusinessException(ErrorCode.ITEM_NOT_ACTIVE);
+        }
+
+        // ③ ItemRequestDetail 생성
+        // 생성자 내부에서 quantity < 1 이면 InvalidQuantityException 발생
+        ItemRequestDetail detail = ItemRequestDetail.builder()
+                .item(item)
+                .quantity(quantity)
+                .build();
+
+        // ④ ItemRequest 생성
+        // status = REQUESTED 는 ItemRequest 생성자 내부에서 자동 세팅
+        ItemRequest itemRequest = ItemRequest.builder()
+                .requester(requester)
+                .build();
+
+        // ⑤ 양방향 연관관계 설정
+        // addDetail() 내부에서 두 가지를 처리한다.
+        //   - itemRequest.details 리스트에 detail 추가
+        //   - detail.itemRequest 필드에 itemRequest 세팅 (package-private assignItemRequest 호출)
+        // 이 메서드를 건너뛰고 직접 세팅하면 양방향 관계가 깨진다.
+        itemRequest.addDetail(detail);
+
+        // ⑥ 저장
+        // cascade = ALL 이므로 ItemRequest 저장 시 ItemRequestDetail 도 함께 INSERT
+        // ItemRequestDetailRepository.save() 별도 호출 불필요
+        itemRequestRepository.save(itemRequest);
     }
 
 

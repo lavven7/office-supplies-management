@@ -29,4 +29,16 @@ public class ItemService {
     public List<Item> findAll() {
         return itemRepository.findAll();
     }
+
+    /**
+     * 활성화된 비품 목록 조회.
+     *
+     * 비품 요청 작성 화면의 드롭다운에서 사용.
+     * active = false 인 비품(비활성화된 비품)은 제외한다.
+     * ItemRepository.findByActiveTrue() 를 호출한다.
+     */
+    public List<Item> findActiveItems() {
+        return itemRepository.findByActiveTrue();
+    }
+
 }

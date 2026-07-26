@@ -1,5 +1,6 @@
 package com.lavven777.officesupplies.domain.itemrequest.controller;
 
+import com.lavven777.officesupplies.domain.item.service.ItemService;
 import com.lavven777.officesupplies.domain.itemrequest.entity.ItemRequest;
 import com.lavven777.officesupplies.domain.itemrequest.service.ItemRequestService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.List;
 public class ItemRequestController {
 
     private final ItemRequestService itemRequestService;
+    private final ItemService itemService;
 
     @GetMapping
     public String list(Model model) {
@@ -23,6 +25,46 @@ public class ItemRequestController {
         return "itemrequests/list";
     }
 
+    /**
+     * 비품 요청 작성 화면.
+     * GET /requests/new
+     *
+     * 주의: /requests/{id} 보다 위에 선언해야 한다.
+     * Spring MVC는 정적 경로("/new")를 변수 경로("/{id}")보다 우선 매핑하지만
+     * 명시적으로 위에 두는 것이 혼란을 줄인다.
+     *
+     * findActiveItems(): active = true 인 비품만 드롭다운에 표시.
+     * 비활성화 비품은 선택 불가.
+     */
+    @GetMapping("/new")
+    public String newForm(Model model) {
+        model.addAttribute("items", itemService.findActiveItems());
+        return "itemrequests/form";
+    }
+
+    /**
+     * 비품 요청 생성.
+     * POST /requests
+     *
+     * requesterId: Security 미적용 MVP 단계에서 1L 하드코딩.
+     * Security 적용 후 @AuthenticationPrincipal로 교체 예정.
+     *
+     * PRG 패턴: 생성 후 redirect 로 POST 중복 제출 방지.
+     */
+    @PostMapping
+    public String create(@RequestParam Long itemId,
+                         @RequestParam Integer quantity) {
+        itemRequestService.createRequest(1L, itemId, quantity);
+        return "redirect:/requests";
+    }
+
+
+    /**
+     * 요청 상세 조회.
+     * GET /requests/{id}
+     *
+     * /new 보다 아래에 선언.
+     */
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         ItemRequest itemRequest = itemRequestService.findById(id);
