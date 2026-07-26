@@ -5,10 +5,7 @@ import com.lavven777.officesupplies.domain.itemrequest.service.ItemRequestServic
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,6 +33,24 @@ public class ItemRequestController {
     @PostMapping("/{id}/approve")
     public String approve(@PathVariable Long id){
         itemRequestService.approveRequest(id, 1L);
+        return "redirect:/requests/" + id;
+    }
+
+    /**
+     * 비품 요청 반려.
+     * POST /requests/{id}/reject
+     *
+     * @RequestParam("rejectReason"):
+     * form의 <input name="rejectReason"> 값을 String으로 받는다.
+     * DTO 없이 String 하나만 받으므로 간단하게 처리 가능.
+     *
+     * approverId는 Security 미적용 MVP 단계에서 1L로 하드코딩.
+     * Security 적용 후 교체 예정.
+     */
+    @PostMapping("/{id}/reject")
+    public String reject(@PathVariable Long id,
+                         @RequestParam("rejectReason") String rejectReason) {
+        itemRequestService.rejectRequest(id, 1L, rejectReason);
         return "redirect:/requests/" + id;
     }
 

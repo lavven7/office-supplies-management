@@ -104,6 +104,43 @@ public class ItemRequestService {
 
     } // approveRequest 끝
 
+    /**
+     * 비품 요청 반려 처리.
+     *
+     * approveRequest()와 구조가 동일하지만
+     * 재고 차감과 이력 저장이 없다.
+     * 반려는 재고에 영향을 주지 않는다.
+     *
+     * @param requestId    반려할 ItemRequest의 id
+     * @param approverId   반려 처리하는 관리자 User의 id
+     * @param rejectReason 반려 사유 — 필수값
+     */
+
+    @Transactional
+    public void rejectRequest(Long requestId, Long approverId, String rejectReason) {
+
+        // ① 반려자 조회
+        User approver = userRepository.findById(approverId)
+                .orElseThrow(UserNotFoundException::new);
+
+        // ② 요청 조회
+        // 반려는 details와 item에 접근하지 않으므로
+        // findById()로 조회해도 N+1 문제가 발생하지 않는다.
+        // 하지만 일관성을 위해 findByIdWithDetails()를 그대로 사용한다.
+        ItemRequest itemRequest = itemRequestRepository.findByIdWithDetails(requestId)
+                .orElseThrow(ItemRequestNotFoundException::new);
+
+        // ③ 상태 변경
+        // ItemRequest.reject() 내부에서
+        //   - validateStatus(REQUESTED) 검증
+        //   - status = REJECTED
+        //   - approver, rejectReason, approvalDate 세팅
+        // 을 한 번에 처리한다.
+        // save() 호출 없이 dirty checking으로 자동 UPDATE.
+        itemRequest.reject(approver, rejectReason);
+    }
+
+
     public List<ItemRequest> findAll() {
         return itemRequestRepository.findAll();
     }
