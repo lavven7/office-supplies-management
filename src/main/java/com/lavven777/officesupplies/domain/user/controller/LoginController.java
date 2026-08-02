@@ -1,5 +1,7 @@
 package com.lavven777.officesupplies.domain.user.controller;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -20,7 +22,13 @@ public class LoginController {
      * Spring Security 가 자동으로 defaultSuccessUrl 로 리다이렉트한다.
      */
     @GetMapping("/login")
-    public String loginPage() {
+    public String loginPage(Authentication authentication) {
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            return "redirect:/requests";
+        }
+
         return "login";
     }
 }
