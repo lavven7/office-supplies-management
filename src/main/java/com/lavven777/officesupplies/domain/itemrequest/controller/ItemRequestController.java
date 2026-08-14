@@ -3,7 +3,9 @@ package com.lavven777.officesupplies.domain.itemrequest.controller;
 import com.lavven777.officesupplies.domain.item.service.ItemService;
 import com.lavven777.officesupplies.domain.itemrequest.entity.ItemRequest;
 import com.lavven777.officesupplies.domain.itemrequest.service.ItemRequestService;
+import com.lavven777.officesupplies.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -53,8 +55,12 @@ public class ItemRequestController {
      */
     @PostMapping
     public String create(@RequestParam Long itemId,
-                         @RequestParam Integer quantity) {
-        itemRequestService.createRequest(1L, itemId, quantity);
+                         @RequestParam Integer quantity,
+                         @AuthenticationPrincipal CustomUserDetails loginUser) {
+        Long requesterId = loginUser.getUser().getId();
+
+        itemRequestService.createRequest(requesterId, itemId, quantity);
+
         return "redirect:/requests";
     }
 
@@ -73,8 +79,12 @@ public class ItemRequestController {
     }
 
     @PostMapping("/{id}/approve")
-    public String approve(@PathVariable Long id){
-        itemRequestService.approveRequest(id, 1L);
+    public String approve(@PathVariable Long id,
+                          @AuthenticationPrincipal CustomUserDetails loginUser) {
+        Long approverId = loginUser.getUser().getId();
+
+        itemRequestService.approveRequest(id, approverId);
+
         return "redirect:/requests/" + id;
     }
 
@@ -91,11 +101,14 @@ public class ItemRequestController {
      */
     @PostMapping("/{id}/reject")
     public String reject(@PathVariable Long id,
-                         @RequestParam("rejectReason") String rejectReason) {
-        itemRequestService.rejectRequest(id, 1L, rejectReason);
+                         @RequestParam("rejectReason") String rejectReason,
+                         @AuthenticationPrincipal CustomUserDetails loginUser) {
+        Long approverId = loginUser.getUser().getId();
+
+        itemRequestService.rejectRequest(id, approverId, rejectReason);
+
         return "redirect:/requests/" + id;
     }
-
 
 
 }
