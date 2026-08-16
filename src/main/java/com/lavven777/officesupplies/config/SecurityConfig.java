@@ -4,6 +4,7 @@ import com.lavven777.officesupplies.global.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,6 +35,14 @@ public class SecurityConfig {
                         .requestMatchers("/login").permitAll()
                         // 정적 리소스 허용
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+
+                        // anyRequest()보다 위에 있어야됨
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/requests/*/approve",
+                                "/requests/*/reject"
+                        ).hasRole("ADMIN")
+
                         // 나머지는 로그인 필요
                         .anyRequest().authenticated()
                 )

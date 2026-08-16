@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>비품 요청 상세</title>
@@ -83,7 +85,8 @@
 
 
 <!-- 요청 처리 버튼 영역: REQUESTED 상태일 때만 표시 -->
-<div th:if="${itemRequest.status.name() == 'REQUESTED'}">
+<div th:if="${itemRequest.status.name() == 'REQUESTED'}"
+     sec:authorize="hasRole('ADMIN')">
 
     <!-- 승인 form -->
     <form th:action="@{/requests/{id}/approve(id=${itemRequest.id})}" method="post">
