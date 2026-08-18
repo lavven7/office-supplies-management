@@ -8,6 +8,7 @@ import com.lavven777.officesupplies.domain.item.repository.ItemRepository;
 import com.lavven777.officesupplies.domain.itemrequest.entity.ItemRequest;
 import com.lavven777.officesupplies.domain.itemrequest.entity.ItemRequestDetail;
 import com.lavven777.officesupplies.domain.itemrequest.repository.ItemRequestRepository;
+import com.lavven777.officesupplies.domain.user.entity.Role;
 import com.lavven777.officesupplies.domain.user.entity.User;
 import com.lavven777.officesupplies.domain.user.repository.UserRepository;
 import com.lavven777.officesupplies.global.exception.*;
@@ -206,6 +207,28 @@ public class ItemRequestService {
         // cascade = ALL 이므로 ItemRequest 저장 시 ItemRequestDetail 도 함께 INSERT
         // ItemRequestDetailRepository.save() 별도 호출 불필요
         itemRequestRepository.save(itemRequest);
+    }
+
+    public List<ItemRequest> findAccessibleRequests(User currentUser) {
+        if (currentUser.getRole() == Role.ADMIN) {
+            return itemRequestRepository.findAll();
+        }
+
+        return itemRequestRepository.findByRequester(currentUser);
+    }
+
+    public ItemRequest findAccessibleRequest(Long requestId, User currentUser) {
+        ItemRequest itemRequest = itemRequestRepository.findByIdWithDetails(requestId)
+                .orElseThrow(ItemRequestNotFoundException::new);
+
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+        boolean isRequester = itemRequest.getRequester().getId().equals(currentUser.getId());
+
+        if (!isAdmin && !isRequester) {
+            throw new UnauthorizedRequestAccessException();
+        }
+
+        return itemRequest;
     }
 
 

@@ -3,6 +3,7 @@ package com.lavven777.officesupplies.domain.itemrequest.controller;
 import com.lavven777.officesupplies.domain.item.service.ItemService;
 import com.lavven777.officesupplies.domain.itemrequest.entity.ItemRequest;
 import com.lavven777.officesupplies.domain.itemrequest.service.ItemRequestService;
+import com.lavven777.officesupplies.domain.user.entity.User;
 import com.lavven777.officesupplies.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,12 +21,6 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
     private final ItemService itemService;
 
-    @GetMapping
-    public String list(Model model) {
-        List<ItemRequest> requests = itemRequestService.findAll();
-        model.addAttribute("requests", requests);
-        return "itemrequests/list";
-    }
 
     /**
      * 비품 요청 작성 화면.
@@ -65,18 +60,6 @@ public class ItemRequestController {
     }
 
 
-    /**
-     * 요청 상세 조회.
-     * GET /requests/{id}
-     *
-     * /new 보다 아래에 선언.
-     */
-    @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model) {
-        ItemRequest itemRequest = itemRequestService.findById(id);
-        model.addAttribute("itemRequest", itemRequest);
-        return "itemrequests/detail";
-    }
 
     @PostMapping("/{id}/approve")
     public String approve(@PathVariable Long id,
@@ -109,6 +92,42 @@ public class ItemRequestController {
 
         return "redirect:/requests/" + id;
     }
+
+    // 목록조회
+    @GetMapping
+    public String list(@AuthenticationPrincipal CustomUserDetails loginUser,
+                       Model model) {
+        User currentUser = loginUser.getUser();
+
+        List<ItemRequest> requests =
+                itemRequestService.findAccessibleRequests(currentUser);
+
+        model.addAttribute("requests", requests);
+        return "itemrequests/list";
+    }
+
+    /**
+     * 요청 상세 조회.
+     * GET /requests/{id}
+     *
+     * /new 보다 아래에 선언.
+     */
+
+
+    // 상세조회
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id,
+                         @AuthenticationPrincipal CustomUserDetails loginUser,
+                         Model model) {
+        User currentUser = loginUser.getUser();
+
+        ItemRequest itemRequest =
+                itemRequestService.findAccessibleRequest(id, currentUser);
+
+        model.addAttribute("itemRequest", itemRequest);
+        return "itemrequests/detail";
+    }
+
 
 
 }
