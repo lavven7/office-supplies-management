@@ -47,15 +47,16 @@
         <td th:text="${item.minimumStock}"></td>
     </tr>
     <tr>
-        <th>재고 부족 여부</th>
-        <!--
-            currentStock <= minimumStock 이면 true.
-        -->
-        <td th:text="${item.currentStock <= item.minimumStock ? '⚠️ 재고 부족' : '정상'}"></td>
+        <th>재고 상태</th>
+        <td th:text="${item.lowStock ? '⚠️ 재고 부족' : '정상'}">
+            정상
+        </td>
     </tr>
     <tr>
         <th>활성 여부</th>
-        <td th:text="${item.active} ? '활성' : '비활성'"></td>
+        <td th:text="${item.active ? '활성' : '비활성'}">
+            활성
+        </td>
     </tr>
     <tr>
         <th>등록일</th>
@@ -117,7 +118,7 @@
 
 <p>
     <a th:href="@{/items}">비품 목록으로</a>
-
+    |
     <a th:href="@{/requests}">비품 요청 목록으로</a>
 </p>
 

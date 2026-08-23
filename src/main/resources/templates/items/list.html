@@ -19,6 +19,7 @@
         <th>카테고리</th>
         <th>현재 재고</th>
         <th>최소 재고</th>
+        <th>재고 상태</th>
         <th>활성 상태</th>
     </tr>
     </thead>
@@ -38,7 +39,13 @@
         <td th:text="${item.category}">문구</td>
         <td th:text="${item.currentStock}">100</td>
         <td th:text="${item.minimumStock}">10</td>
-        <td th:text="${item.active}">true</td>
+        <td th:text="${item.lowStock ? '⚠️ 재고 부족' : '정상'}">
+            정상
+        </td>
+
+        <td th:text="${item.active ? '활성' : '비활성'}">
+            활성
+        </td>
     </tr>
     </tbody>
 </table>
