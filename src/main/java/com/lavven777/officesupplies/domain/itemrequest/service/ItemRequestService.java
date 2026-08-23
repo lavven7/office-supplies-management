@@ -64,8 +64,6 @@ public class ItemRequestService {
 
         validateNotRequester(itemRequest, approver);
 
-        itemRequest.approve(approver);
-
         // ③ 상태 변경
         // ItemRequest.approve() 내부에서 두 가지를 처리한다.
         //   - validateStatus(REQUESTED): REQUESTED가 아니면 InvalidRequestStatusException 발생
