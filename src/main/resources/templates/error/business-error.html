@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>오류 발생</title>
+</head>
+<body>
+
+<h1>요청을 처리할 수 없습니다</h1>
+
+<!--
+    GlobalExceptionHandler 에서 model 에 담은 값을 표시.
+    errorCode   : ErrorCode.status (400, 403 등 HTTP 상태 코드)
+    errorMessage: ErrorCode.message (한글 안내 메시지)
+-->
+<p>
+    오류 코드: <span th:text="${errorCode}"></span>
+</p>
+<p>
+    오류 내용: <span th:text="${errorMessage}"></span>
+</p>
+
+<a th:href="@{/requests}">요청 목록으로 돌아가기</a>
+
+</body>
+</html>
