@@ -62,6 +62,10 @@ public class ItemRequestService {
                 .orElseThrow(ItemRequestNotFoundException::new);
 
 
+        validateNotRequester(itemRequest, approver);
+
+        itemRequest.approve(approver);
+
         // ③ 상태 변경
         // ItemRequest.approve() 내부에서 두 가지를 처리한다.
         //   - validateStatus(REQUESTED): REQUESTED가 아니면 InvalidRequestStatusException 발생
@@ -105,6 +109,12 @@ public class ItemRequestService {
 
     } // approveRequest 끝
 
+    private void validateNotRequester(ItemRequest itemRequest, User approver) {
+        if (itemRequest.getRequester().getId().equals(approver.getId())) {
+            throw new SelfApprovalNotAllowedException();
+        }
+    }
+
     /**
      * 비품 요청 반려 처리.
      *
@@ -130,6 +140,8 @@ public class ItemRequestService {
         // 하지만 일관성을 위해 findByIdWithDetails()를 그대로 사용한다.
         ItemRequest itemRequest = itemRequestRepository.findByIdWithDetails(requestId)
                 .orElseThrow(ItemRequestNotFoundException::new);
+
+        validateNotRequester(itemRequest, approver);
 
         // ③ 상태 변경
         // ItemRequest.reject() 내부에서
