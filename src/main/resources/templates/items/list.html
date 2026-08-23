@@ -20,8 +20,17 @@
     </thead>
     <tbody>
     <tr th:each="item : ${items}">
-        <td th:text="${item.id}">1</td>
-        <td th:text="${item.name}">A4 용지</td>
+        <td><a th:href="@{/items/{id}(id=${item.id})}"
+               th:text="${item.id}">
+            1
+            </a>
+        </td>
+        <td>
+            <a th:href="@{/items/{id}(id=${item.id})}"
+                th:text="${item.name}">
+            A4 용지
+        </a>
+        </td>
         <td th:text="${item.category}">문구</td>
         <td th:text="${item.currentStock}">100</td>
         <td th:text="${item.minimumStock}">10</td>
