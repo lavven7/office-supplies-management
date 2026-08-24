@@ -36,12 +36,21 @@ public class SecurityConfig {
                         // 정적 리소스 허용
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
 
+                        // 비품 등록 화면은 ADMIN만 접근 가능
+                        .requestMatchers("/items/new").hasRole("ADMIN")
+
+                        // 비품 등록 요청은 ADMIN만 가능
+                        .requestMatchers(HttpMethod.POST, "/items").hasRole("ADMIN")
+
                         // anyRequest()보다 위에 있어야됨
+                        // 요청 승인/반려는 ADMIN만 가능
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/requests/*/approve",
                                 "/requests/*/reject"
                         ).hasRole("ADMIN")
+
+
 
                         // 나머지는 로그인 필요
                         .anyRequest().authenticated()

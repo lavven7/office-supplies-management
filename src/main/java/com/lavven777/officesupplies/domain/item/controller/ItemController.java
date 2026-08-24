@@ -9,7 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Controller
@@ -23,6 +26,34 @@ public class ItemController {
     public String items(Model model) {
         model.addAttribute("items", itemService.findAll());
         return "items/list";
+    }
+
+    @GetMapping("/items/new")
+    public String newForm() {
+        return "items/form";
+    }
+
+    @PostMapping("/items")
+    public String register(
+            @RequestParam String name,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) BigDecimal unitPrice,
+            @RequestParam Integer currentStock,
+            @RequestParam Integer minimumStock
+    ) {
+        Item item = Item.builder()
+                .name(name)
+                .description(description)
+                .category(category)
+                .unitPrice(unitPrice)
+                .currentStock(currentStock)
+                .minimumStock(minimumStock)
+                .build();
+
+        itemService.registerItem(item);
+
+        return "redirect:/items";
     }
 
     @GetMapping("/items/{id}")

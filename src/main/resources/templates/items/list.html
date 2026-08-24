@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>비품 목록</title>
@@ -9,6 +11,12 @@
 
 <p>
     <a th:href="@{/requests}">비품 요청 목록 보기</a>
+</p>
+
+<p sec:authorize="hasRole('ADMIN')">
+    <a th:href="@{/items/new}">
+        비품 등록
+    </a>
 </p>
 
 <table border="1">
