@@ -42,7 +42,15 @@ public class SecurityConfig {
                         // 비품 등록 요청은 ADMIN만 가능
                         .requestMatchers(HttpMethod.POST, "/items").hasRole("ADMIN")
 
-                        // anyRequest()보다 위에 있어야됨
+
+                        // .anyRequest().authenticated()보다 위에 있어야됨
+                        // 비품 비활성화는 ADMIN만 가능
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/items/*/deactivate"
+                        ).hasRole("ADMIN")
+
+                        // .anyRequest().authenticated()보다 위에 있어야됨
                         // 요청 승인/반려는 ADMIN만 가능
                         .requestMatchers(
                                 HttpMethod.POST,

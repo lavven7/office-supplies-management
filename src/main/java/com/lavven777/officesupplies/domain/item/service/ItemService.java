@@ -41,4 +41,13 @@ public class ItemService {
         return itemRepository.findByActiveTrue();
     }
 
+
+    @Transactional
+    public void deactivateItem(Long id) {
+        Item item = itemRepository.findById(id)
+                .orElseThrow(ItemNotFoundException::new);
+
+        item.deactivate();
+    }
+
 }

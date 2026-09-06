@@ -72,4 +72,13 @@ public class ItemController {
 
         return "items/detail";
     }
+
+    @PostMapping("/items/{id}/deactivate")
+    public String deactivate(@PathVariable Long id) {
+        itemService.deactivateItem(id);
+        return "redirect:/items/" + id;
+    }
+
+
+
 }
