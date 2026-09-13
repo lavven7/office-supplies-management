@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>재고 입고</title>
+</head>
+<body>
+<main>
+    <h1>재고 입고</h1>
+
+    <table border="1">
+        <tr>
+            <th>비품 ID</th>
+            <td th:text="${item.id}">1</td>
+        </tr>
+
+        <tr>
+            <th>비품명</th>
+            <td th:text="${item.name}">A4 용지</td>
+        </tr>
+
+        <tr>
+            <th>현재 재고</th>
+            <td th:text="${item.currentStock}">100</td>
+        </tr>
+
+        <tr>
+            <th>활성 상태</th>
+            <td th:text="${item.active ? '활성' : '비활성'}">
+                활성
+            </td>
+        </tr>
+    </table>
+
+    <form th:action="@{/items/{id}/inbound(id=${item.id})}"
+          method="post">
+
+        <input type="hidden"
+               th:name="${_csrf.parameterName}"
+               th:value="${_csrf.token}">
+
+        <div>
+            <label for="quantity">
+                입고 수량
+            </label>
+
+            <!--
+                min="1"은 브라우저 입력을 보조하지만
+                직접 POST 요청으로 우회할 수 있으므로
+                ItemService에서도 반드시 검증해야 한다.
+            -->
+            <input type="number"
+                   id="quantity"
+                   name="quantity"
+                   min="1"
+                   required>
+        </div>
+
+        <div>
+            <button type="submit">
+                입고 처리
+            </button>
+
+            <a th:href="@{/items/{id}(id=${item.id})}">
+                취소
+            </a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

@@ -4,7 +4,9 @@ import com.lavven777.officesupplies.domain.inventory.entity.InventoryHistory;
 import com.lavven777.officesupplies.domain.item.entity.Item;
 import com.lavven777.officesupplies.domain.inventory.service.InventoryHistoryService;
 import com.lavven777.officesupplies.domain.item.service.ItemService;
+import com.lavven777.officesupplies.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -76,6 +78,20 @@ public class ItemController {
     @PostMapping("/items/{id}/deactivate")
     public String deactivate(@PathVariable Long id) {
         itemService.deactivateItem(id);
+        return "redirect:/items/" + id;
+    }
+
+    @GetMapping("/items/{id}/inbound")
+    public String inboundForm(@PathVariable Long id, Model model) {
+        model.addAttribute("item", itemService.findById(id));
+        return "items/inbound-form";
+    }
+
+    @PostMapping("/items/{id}/inbound")
+    public String inbound(@PathVariable Long id,
+                          @RequestParam Integer quantity,
+                          @AuthenticationPrincipal CustomUserDetails loginUser) {
+        itemService.inboundStock(id, quantity, loginUser.getUser().getId());
         return "redirect:/items/" + id;
     }
 

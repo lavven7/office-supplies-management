@@ -50,6 +50,10 @@ public class SecurityConfig {
                                 "/items/*/deactivate"
                         ).hasRole("ADMIN")
 
+                        // 재고 입고 화면과 처리
+                        .requestMatchers("/items/*/inbound")
+                        .hasRole("ADMIN")
+
                         // .anyRequest().authenticated()보다 위에 있어야됨
                         // 요청 승인/반려는 ADMIN만 가능
                         .requestMatchers(

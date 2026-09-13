@@ -1,8 +1,15 @@
 package com.lavven777.officesupplies.domain.item.service;
 
+import com.lavven777.officesupplies.domain.inventory.entity.HistoryType;
+import com.lavven777.officesupplies.domain.inventory.entity.InventoryHistory;
+import com.lavven777.officesupplies.domain.inventory.repository.InventoryHistoryRepository;
 import com.lavven777.officesupplies.domain.item.entity.Item;
 import com.lavven777.officesupplies.domain.item.repository.ItemRepository;
+import com.lavven777.officesupplies.domain.user.repository.UserRepository;
+import com.lavven777.officesupplies.global.exception.InvalidQuantityException;
 import com.lavven777.officesupplies.global.exception.ItemNotFoundException;
+import com.lavven777.officesupplies.global.exception.UserNotFoundException;
+import com.lavven777.officesupplies.domain.user.entity.User;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +22,8 @@ import java.util.List;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final InventoryHistoryRepository inventoryHistoryRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public Item registerItem(Item item) {
@@ -48,6 +57,41 @@ public class ItemService {
                 .orElseThrow(ItemNotFoundException::new);
 
         item.deactivate();
+    }
+
+    @Transactional
+    public void inboundStock(Long itemId, Integer quantity, Long createdById) {
+        if (quantity == null || quantity <= 0) {
+            throw new InvalidQuantityException();
+        }
+
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(ItemNotFoundException::new);
+
+        User createdBy = userRepository.findById(createdById)
+                .orElseThrow(UserNotFoundException::new);
+
+        int beforeStock = item.getCurrentStock();
+
+        item.increaseStock(quantity);
+
+        if (quantity == 999) {
+            throw new RuntimeException("입고 롤백 테스트");
+        }
+
+        int afterStock = item.getCurrentStock();
+
+        InventoryHistory history = InventoryHistory.builder()
+                .item(item)
+                .historyType(HistoryType.INBOUND)
+                .quantity(quantity)
+                .beforeStock(beforeStock)
+                .afterStock(afterStock)
+                .createdBy(createdBy)
+                .build();
+
+
+        inventoryHistoryRepository.save(history);
     }
 
 }
