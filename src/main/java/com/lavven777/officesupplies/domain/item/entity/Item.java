@@ -2,6 +2,7 @@ package com.lavven777.officesupplies.domain.item.entity;
 
 import com.lavven777.officesupplies.global.common.BaseTimeEntity;
 import com.lavven777.officesupplies.global.exception.InsufficientStockException;
+import com.lavven777.officesupplies.global.exception.InvalidQuantityException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -96,9 +97,13 @@ public class Item extends BaseTimeEntity {
      * 재고 부족 시 InsufficientStockException 발생 → 트랜잭션 롤백.
      */
     public void decreaseStock(int quantity) {
+        // 수량이 정상인지 검사하는 메서드 (0이하면 예외처리)
+        validateQuantity(quantity);
+
         if (this.currentStock < quantity) {
             throw new InsufficientStockException(this.name);
         }
+
         this.currentStock -= quantity;
     }
 
@@ -107,8 +112,18 @@ public class Item extends BaseTimeEntity {
      * 입고(INBOUND) 또는 재고 조정(ADJUSTMENT) 처리 시 호출.
      */
     public void increaseStock(int quantity) {
+        validateQuantity(quantity);
+
         this.currentStock += quantity;
     }
+
+    private void validateQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new InvalidQuantityException();
+        }
+    }
+
+
 
     /**
      * 재고 부족 여부 확인.

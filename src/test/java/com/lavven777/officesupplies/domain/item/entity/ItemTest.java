@@ -1,7 +1,10 @@
 package com.lavven777.officesupplies.domain.item.entity;
 
 import com.lavven777.officesupplies.global.exception.InsufficientStockException;
+import com.lavven777.officesupplies.global.exception.InvalidQuantityException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -43,6 +46,34 @@ class ItemTest {
         // then
         assertThat(item.getCurrentStock()).isEqualTo(15);
     }
+
+    
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void 차감_수량은_1_이상이어야_한다(int quantity) {
+        // given
+        Item item = createItem(10, 3);
+
+        // when & then
+        assertThatThrownBy(() -> item.decreaseStock(quantity))
+                .isInstanceOf(InvalidQuantityException.class);
+
+        assertThat(item.getCurrentStock()).isEqualTo(10);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void 증가_수량은_1_이상이어야_한다(int quantity) {
+        // given
+        Item item = createItem(10, 3);
+
+        // when & then
+        assertThatThrownBy(() -> item.increaseStock(quantity))
+                .isInstanceOf(InvalidQuantityException.class);
+
+        assertThat(item.getCurrentStock()).isEqualTo(10);
+    }
+
 
     @Test
     void 현재_재고가_최소_재고와_같으면_재고_부족이다() {
@@ -94,6 +125,7 @@ class ItemTest {
         // then
         assertThat(item.isActive()).isFalse();
     }
+
 
     private Item createItem(Integer currentStock, Integer minimumStock) {
         return Item.builder()
