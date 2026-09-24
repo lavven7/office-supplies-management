@@ -47,7 +47,7 @@ class ItemTest {
         assertThat(item.getCurrentStock()).isEqualTo(15);
     }
 
-    
+
     @ParameterizedTest
     @ValueSource(ints = {0, -1})
     void 차감_수량은_1_이상이어야_한다(int quantity) {
