@@ -1,6 +1,7 @@
 package com.lavven777.officesupplies.domain.itemrequest.entity;
 
 import com.lavven777.officesupplies.domain.item.entity.Item;
+import com.lavven777.officesupplies.global.exception.InvalidQuantityException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -48,6 +49,10 @@ public class ItemRequestDetail {
 
     @Builder
     public ItemRequestDetail(Item item, Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new InvalidQuantityException();
+        }
+
         this.item = item;
         this.quantity = quantity;
         // itemRequest는 ItemRequest.addDetail()을 통해 설정 — 직접 세팅 금지
