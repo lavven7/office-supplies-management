@@ -75,10 +75,6 @@ public class ItemService {
 
         item.increaseStock(quantity);
 
-        if (quantity == 999) {
-            throw new RuntimeException("입고 롤백 테스트");
-        }
-
         int afterStock = item.getCurrentStock();
 
         InventoryHistory history = InventoryHistory.builder()
