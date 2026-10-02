@@ -4,15 +4,20 @@
       lang="ko">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
     <title>비품 상세</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
+<main class="container page-container py-4 py-md-5">
 
-<h1>비품 상세</h1>
+<h1 class="page-title">비품 상세</h1>
+<p class="page-description">비품 정보와 재고 변경 이력을 확인하세요.</p>
+<div class="page-content">
 
-<!-- 비품 기본 정보 -->
-<table border="1">
+<div class="table-responsive"><table class="table align-middle mb-0 detail-table">
     <tr>
         <th>ID</th>
         <td th:text="${item.id}"></td>
@@ -23,10 +28,7 @@
     </tr>
     <tr>
         <th>설명</th>
-        <!--
-            description 은 nullable.
-            null 이면 '-'으로 표시
-        -->
+
         <td th:text="${item.description != null ? item.description : '-'}"></td>
     </tr>
     <tr>
@@ -35,10 +37,7 @@
     </tr>
     <tr>
         <th>단가</th>
-        <!--
-            unitPrice 는 BigDecimal, nullable.
-            null 이면 '-'
-        -->
+
         <td th:text="${item.unitPrice != null ? item.unitPrice : '-'}"></td>
     </tr>
     <tr>
@@ -69,20 +68,16 @@
         <th>수정일</th>
         <td th:text="${#temporals.format(item.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
     </tr>
-</table>
+</table></div>
 
 <hr/>
 
 <h2>재고 이력</h2>
 
-<!--
-    histories 가 비어 있으면 "이력 없음" 표시.
-    th:if / th:unless 로 조건 분기.
--->
 <p th:if="${#lists.isEmpty(histories)}">재고 이력이 없습니다.</p>
 
-<table th:unless="${#lists.isEmpty(histories)}" border="1">
-    <thead>
+<div class="table-responsive"><table class="table table-hover align-middle mb-0" th:unless="${#lists.isEmpty(histories)}">
+    <thead class="table-light">
     <tr>
         <th>일시</th>
         <th>유형</th>
@@ -94,30 +89,18 @@
     </thead>
     <tbody>
     <tr th:each="history : ${histories}">
-        <!--
-            createdAt 은 BaseCreatedEntity 에서 상속한 필드.
-            LocalDateTime 포맷.
-        -->
+
         <td th:text="${#temporals.format(history.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
-        <!--
-            historyType 은 HistoryType enum.
-            .name() 으로 문자열 표시 (INBOUND / OUTBOUND / ADJUSTMENT).
-            enum 에 description 필드가 있으면 history.historyType.description 사용 가능.
-        -->
+
         <td th:text="${history.historyType.name()}"></td>
         <td th:text="${history.quantity}"></td>
         <td th:text="${history.beforeStock}"></td>
         <td th:text="${history.afterStock}"></td>
-        <!--
-            createdBy 는 @ManyToOne(fetch = LAZY).
-            InventoryHistoryService.findByItem() 호출 시
-            LAZY 로딩으로 createdBy 를 가져오는 추가 쿼리가 발생한다.
-            MVP 단계에서는 허용, 이력이 많아지면 fetch join 으로 개선.
-        -->
+
         <td th:text="${history.createdBy.name}"></td>
     </tr>
     </tbody>
-</table>
+</table></div>
 
 <div sec:authorize="hasRole('ADMIN')"
      th:if="${item.active}">
@@ -129,7 +112,7 @@
                th:name="${_csrf.parameterName}"
                th:value="${_csrf.token}">
 
-        <button type="submit"
+        <button class="btn btn-outline-danger" type="submit"
                 onclick="return confirm('이 비품을 비활성화하시겠습니까?')">
             비활성화
         </button>
@@ -137,26 +120,10 @@
 
 </div>
 <p sec:authorize="hasRole('ADMIN')">
-    <a th:href="@{/items/{id}/inbound(id=${item.id})}">
+    <a class="btn btn-outline-secondary" th:href="@{/items/{id}/inbound(id=${item.id})}">
         재고 입고
     </a>
 </p>
-
-<div sec:authorize="hasRole('ADMIN')"
-     th:if="${item.active}">
-    <form th:action="@{/items/{id}/deactivate(id=${item.id})}"
-          method="post">
-
-        <input type="hidden"
-               th:name="${_csrf.parameterName}"
-               th:value="${_csrf.token}">
-
-        <button type="submit"
-                onclick="return confirm('이 비품을 비활성화하시겠습니까?')">
-            비활성화
-        </button>
-    </form>
-</div>
 
 <div sec:authorize="hasRole('ADMIN')"
      th:unless="${item.active}">
@@ -164,10 +131,12 @@
 </div>
 
 <p>
-    <a th:href="@{/items}">비품 목록으로</a>
-    |
-    <a th:href="@{/requests}">비품 요청 목록으로</a>
+    <a class="btn btn-outline-secondary" th:href="@{/items}">비품 목록으로</a>
+
+    <a class="btn btn-outline-secondary" th:href="@{/requests}">비품 요청 목록으로</a>
 </p>
 
+</div>
+</main>
 </body>
 </html>

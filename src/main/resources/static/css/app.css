@@ -1,0 +1,22 @@
+body { background: #f8f9fa; color: #212529; }
+.page-container { max-width: 1140px; }
+.page-form { max-width: 960px; }
+.page-login { max-width: 480px; }
+.page-title { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+.page-description { color: #6c757d; margin-bottom: 1.5rem; }
+.page-content { background: #fff; border-radius: .75rem; padding: 1.5rem; box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); }
+.page-content > h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 1rem; }
+.page-content > p, .page-content > div, .page-content > form { margin-bottom: 1rem; }
+form > div { margin-bottom: 1.25rem; }
+.table-responsive { margin-bottom: 1.5rem; }
+table { width: 100%; }
+th { white-space: nowrap; }
+td { overflow-wrap: anywhere; }
+table a { text-decoration: none; font-weight: 600; }
+.detail-table th { width: 25%; color: #6c757d; font-weight: 500; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .5rem; margin-top: 1.5rem; }
+.actions form { margin: 0; }
+@media (max-width: 575.98px) {
+    .page-title { font-size: 1.75rem; }
+    .page-content { padding: 1.25rem; }
+}
