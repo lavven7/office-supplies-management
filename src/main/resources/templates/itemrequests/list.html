@@ -21,7 +21,8 @@
     <span> / </span>
     <span sec:authentication="principal.username"></span>
     <span> / </span>
-    <span sec:authentication="principal.authorities"></span>
+    <span sec:authorize="hasRole('ADMIN')">관리자</span>
+    <span sec:authorize="hasRole('USER')">사용자</span>
 </div>
 
 <form th:action="@{/logout}" method="post">
@@ -57,7 +58,7 @@
             </a>
         </td>
         <td th:text="${request.requester.name}">홍길동</td>
-        <td th:text="${request.status}">REQUESTED</td>
+        <td th:text="${request.status.displayName}">요청 대기</td>
         <td th:text="${#temporals.format(request.createdAt, 'yyyy-MM-dd')}">2026-07-06</td>
     </tr>
     </tbody>

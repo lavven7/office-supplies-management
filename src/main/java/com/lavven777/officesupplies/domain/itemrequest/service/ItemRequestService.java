@@ -151,9 +151,27 @@ public class ItemRequestService {
         itemRequest.reject(approver, rejectReason);
     }
 
+    /**
+     * 요청자가 자신의 대기 중인 요청을 취소한다.
+     */
+    @Transactional
+    public void cancelRequest(Long requestId, Long requesterId) {
+        ItemRequest itemRequest = itemRequestRepository.findByIdWithDetails(requestId)
+                .orElseThrow(ItemRequestNotFoundException::new);
+
+        boolean isRequester = itemRequest.getRequester().getId().equals(requesterId);
+
+        if (!isRequester) {
+            throw new UnauthorizedRequestAccessException();
+        }
+
+        itemRequest.cancel();
+    }
+
 
     public List<ItemRequest> findAll() {
         return itemRequestRepository.findAll();
+
     }
 
 

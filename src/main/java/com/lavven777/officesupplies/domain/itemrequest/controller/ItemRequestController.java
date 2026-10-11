@@ -93,6 +93,19 @@ public class ItemRequestController {
         return "redirect:/requests/" + id;
     }
 
+    /**
+     * 본인이 작성한 대기 요청을 취소한다.
+     */
+    @PostMapping("/{id}/cancel")
+    public String cancel(@PathVariable Long id,
+                         @AuthenticationPrincipal CustomUserDetails loginUser) {
+        Long requesterId = loginUser.getUser().getId();
+
+        itemRequestService.cancelRequest(id, requesterId);
+
+        return "redirect:/requests/" + id;
+    }
+
     // 목록조회
     @GetMapping
     public String list(@AuthenticationPrincipal CustomUserDetails loginUser,

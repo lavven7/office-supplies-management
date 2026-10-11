@@ -34,7 +34,7 @@
     <tr>
         <th>상태</th>
 
-        <td th:text="${itemRequest.status}"></td>
+        <td th:text="${itemRequest.status.displayName}"></td>
     </tr>
 
     <tr th:if="${itemRequest.rejectReason != null}">
@@ -72,8 +72,9 @@
     </tbody>
 </table></div>
 
-<div th:if="${itemRequest.status.name() == 'REQUESTED'}"
-     sec:authorize="hasRole('ADMIN')">
+    <div th:if="${itemRequest.status.name() == 'REQUESTED'
+             and itemRequest.requester.id != #authentication.principal.user.id}"
+         sec:authorize="hasRole('ADMIN')">
 
     <form th:action="@{/requests/{id}/approve(id=${itemRequest.id})}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -97,6 +98,24 @@
     </form>
 
 </div>
+
+    <div th:if="${itemRequest.status.name() == 'REQUESTED'
+             and itemRequest.requester.id == #authentication.principal.user.id}"
+         class="mt-4 pt-4 border-top">
+
+        <form th:action="@{/requests/{id}/cancel(id=${itemRequest.id})}"
+              method="post"
+              onsubmit="return confirm('이 요청을 취소하시겠습니까?');">
+
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <button class="btn btn-outline-danger" type="submit">
+                요청 취소
+            </button>
+        </form>
+    </div>
 
 <p>
     <a class="btn btn-outline-secondary" th:href="@{/requests}">요청 목록으로</a>

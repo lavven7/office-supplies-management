@@ -18,11 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import com.lavven777.officesupplies.global.exception.UnauthorizedRequestAccessException;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -154,6 +156,38 @@ class ItemRequestServiceIntegrationTest {
         assertThat(history.getCreatedBy().getId())
                 .isEqualTo(approverId);
     }
+
+    @Test
+    void 요청자는_자신의_대기_요청을_취소할_수_있다() {
+        // when
+        itemRequestService.cancelRequest(
+                itemRequest.getId(),
+                requester.getId()
+        );
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        ItemRequest canceledRequest = itemRequestRepository
+                .findById(itemRequest.getId())
+                .orElseThrow();
+
+        assertThat(canceledRequest.getStatus())
+                .isEqualTo(ItemRequestStatus.CANCELED);
+    }
+
+    @Test
+    void 다른_사용자는_요청을_취소할_수_없다() {
+        // when & then
+        assertThatThrownBy(() ->
+                itemRequestService.cancelRequest(
+                        itemRequest.getId(),
+                        approver.getId()
+                )
+        ).isInstanceOf(UnauthorizedRequestAccessException.class);
+    }
+
 
     private User createUser(
             String employeeNumber,
