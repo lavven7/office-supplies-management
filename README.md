@@ -4,22 +4,6 @@
 
 사용자는 필요한 비품을 요청하고 처리 상태를 확인할 수 있으며, 관리자는 요청 승인·반려와 재고 입고 및 비품 관리를 수행할 수 있습니다.
 
-<p>
-  <img src="https://img.shields.io/badge/Java-21-007396?style=flat-square&logo=openjdk&logoColor=white" alt="Java 21">
-  <img src="https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=flat-square&logo=springboot&logoColor=white" alt="Spring Boot">
-  <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=white" alt="Spring Security">
-  <img src="https://img.shields.io/badge/JPA-Hibernate-59666C?style=flat-square&logo=hibernate&logoColor=white" alt="JPA Hibernate">
-  <img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=flat-square&logo=thymeleaf&logoColor=white" alt="Thymeleaf">
-</p>
-
-<p>
-  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&logo=mysql&logoColor=white" alt="MySQL">
-  <img src="https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=gradle&logoColor=white" alt="Gradle">
-  <img src="https://img.shields.io/badge/JUnit_5-25A162?style=flat-square&logo=junit5&logoColor=white" alt="JUnit 5">
-  <img src="https://img.shields.io/badge/AWS-EC2_%7C_RDS-232F3E?style=flat-square&logo=amazonwebservices&logoColor=white" alt="AWS">
-  <img src="https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=nginx&logoColor=white" alt="Nginx">
-</p>
-
 ## Live Demo
 
 - 서비스: https://officesupplies.duckdns.org
@@ -33,8 +17,8 @@
 | 관리자 | `admin1@office.local` | `OfficeDemoAdmin1&` |
 | 사용자 | `user1@office.local` | `OfficeDemoUser1&` |
 
-> 데모 계정의 데이터는 다른 방문자의 테스트로 변경될 수 있습니다.
->  공개 데모 계정은 기능 체험을 위한 계정입니다.  
+> 데모 계정의 데이터는 다른 방문자의 테스트로 변경될 수 있습니다.<br>
+> 공개 데모 계정은 기능 체험을 위한 계정입니다.<br>
 > 다른 방문자를 위해 기존 데이터를 과도하게 변경하거나 비활성화하지 말아 주세요.
 
 ## 주요 기능
@@ -87,6 +71,24 @@
 - 재고 변경은 입고·출고 이력으로 기록됩니다.
 
 ## 기술 스택
+
+<p>
+<p>
+  <img src="https://img.shields.io/badge/Java-21-007396?style=flat-square&logo=openjdk&logoColor=white" alt="Java 21">
+  <img src="https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=flat-square&logo=springboot&logoColor=white" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=white" alt="Spring Security">
+  <img src="https://img.shields.io/badge/JPA-Hibernate-59666C?style=flat-square&logo=hibernate&logoColor=white" alt="JPA Hibernate">
+  <img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=flat-square&logo=thymeleaf&logoColor=white" alt="Thymeleaf">
+</p>
+
+<p>
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&logo=mysql&logoColor=white" alt="MySQL">
+  <img src="https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=gradle&logoColor=white" alt="Gradle">
+  <img src="https://img.shields.io/badge/JUnit_5-25A162?style=flat-square&logo=junit5&logoColor=white" alt="JUnit 5">
+  <img src="https://img.shields.io/badge/AWS-EC2_%7C_RDS-232F3E?style=flat-square&logo=amazonwebservices&logoColor=white" alt="AWS">
+  <img src="https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=nginx&logoColor=white" alt="Nginx">
+</p>
+</p>
 
 | 영역 | 기술 |
 |---|---|
