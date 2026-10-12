@@ -92,7 +92,7 @@
 
         <td th:text="${#temporals.format(history.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
 
-        <td th:text="${history.historyType.name()}"></td>
+        <td th:text="${history.historyType.displayName}"></td>
         <td th:text="${history.quantity}"></td>
         <td th:text="${history.beforeStock}"></td>
         <td th:text="${history.afterStock}"></td>
